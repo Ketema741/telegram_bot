@@ -34,19 +34,24 @@ async def process_role(query: CallbackQuery, state: FSMContext):
         await state.set_state(BookRideState.start_location)
         await query.message.edit_text("Enter Start Location: ")
     elif query_data == "ride_history":
+        
         user_or_driver = "Passenger" if user_data["role"] == "driver" else "Driver"
-        ride_id, phone_number, driver_id, start_location, destination, travel_time, fare_estimate, status, driver_name, driver_phone_number = res[0]
-        edited_text = (
-            f"🚗 R I D E  H I S T O R Y 🚗\n\n"
-            f"{user_or_driver}: {driver_name}\n"
-            f"{user_or_driver} Phone: {driver_phone_number}\n\n"
-            f"Ride ID: {ride_id}\n"
-            f"Start Location: {start_location}\n"
-            f"Destination: {destination}\n"
-            f"Travel Time: {travel_time}\n"
-            f"Fare Estimate: {fare_estimate} ETB"
-        )
-        await query.message.edit_text(edited_text)
+        if len(res)>0:
+            ride_id, phone_number, driver_id, start_location, destination, travel_time, fare_estimate, status, driver_name, driver_phone_number = res[0]
+            edited_text = (
+                f"🚗 R I D E  H I S T O R Y 🚗\n\n"
+                f"{user_or_driver}: {driver_name}\n"
+                f"{user_or_driver} Phone: {driver_phone_number}\n\n"
+                f"Ride ID: {ride_id}\n"
+                f"Start Location: {start_location}\n"
+                f"Destination: {destination}\n"
+                f"Travel Time: {travel_time}\n"
+                f"Fare Estimate: {fare_estimate} ETB"
+            )
+            await query.message.edit_text(edited_text)
+        else:
+            await query.message.edit_text("No ride history")
+            
 
     elif query_data == "rate_driver":
         res = await db.get_recent_driver_details(query.from_user.id)
